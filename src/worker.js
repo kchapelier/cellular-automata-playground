@@ -1,7 +1,9 @@
 "use strict";
 
+// when adding colors check out the LSB MSB issue
+
 var CellularAutomata = require('cellular-automata'),
-    color0 = 0x000000FF,
+    color0 = 0xFF000000,
     color1 = 0xFFFFFFFF;
 
 function createImageData (rawData, width, height) {
