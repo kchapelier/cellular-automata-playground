@@ -6,9 +6,7 @@ A little utility to work with 2D cellular automata and a demo for the [cellular 
 
 Said module is designed and optimized to process sequences of rules in a single shot.
 
-The following [rule formats](https://github.com/kchapelier/cellular-automata-rule-parser) are accepted : Life (S/B), Extended Life, Extended Stochastic, Vote for life and LUKY.
-
-In my opinion the Extended Life rule format is the most readable and the most polyvalent as it can be used with large neighborhoods and higher dimensions (3D, 4D, ...).
+The following [rule formats](https://github.com/kchapelier/cellular-automata-rule-parser) are accepted : Life (S/B), custom Extended Life (E S/B), Extended Stochastic (E S:P/B:P), Vote for life and LUKY. In my opinion the Extended Life rule format is the most readable and the most polyvalent as it can be used with large neighborhoods and higher dimensions (3D, 4D, ...).
 
 ## Examples
 
@@ -22,4 +20,5 @@ Click on the images to load the app with the matching settings.
 * Include [cellular-automata-gpu](https://github.com/kchapelier/cellular-automata-gpu) as an alternative engine.
 * Add support for multi-states rules (Generations, Cyclic CA and NLUKY). They are already supported by the underlying modules.
 * Output using with marching squares to smooth out the edges.
-* Alternative playground for 3D CA ? (checkout [cellular-automata-voxel-shader](https://github.com/kchapelier/cellular-automata-voxel-shader) !)
+* Alternative playground for 3D CA ? (checkout [cellular-automata-voxel-shader](https://github.com/kchapelier/cellular-automata-voxel-shader) in the meantime)
+* Allow the edition of the initial grid.
