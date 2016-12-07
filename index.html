@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="https://use.fontawesome.com/b74a0a54af.js"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-content">
+            <div class="row">
+                <div class="field medium">
+                    <label for="animationSpeed">Animation speed</label>
+                    <select id="animationSpeed" name="animationSpeed">
+                        <option value="0">No animation</option>
+                        <option value="10" selected>Fast</option>
+                        <option value="70">Medium</option>
+                        <option value="180">Slow</option>
+                    </select>
+                </div><div class="field medium">
+                    <label for="zoom">Zoom level</label>
+                    <select id="zoom" name="zoom">
+                        <option value="1">1:1</option>
+                        <option value="2" selected>2:1</option>
+                        <option value="3">3:1</option>
+                        <option value="4">4:1</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="field medium">
+                    <label for="width">Grid width</label>
+                    <input id="width" name="width" type="number" value="100" />
+                </div><div class="field medium">
+                    <label for="height">Grid height</label>
+                    <input id="height" name="height" type="number" value="100" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="field full">
+                    <label for="outValue">Out of field value</label>
+                    <select id="outValue" name="outValue">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="wrap">wrap</option>
+                        <option value="clamp">clamp</option>
+                    </select>
+                </div>
+            </div>
+            <div class="spacer"></div>
+
+            <div class="rule-list">
+                <div class="template" id="template-rule">
+                    <!--
+                    <div class="row rule {className}" draggable="true">
+                        <div class="field large">
+                            <label>Rule</label>
+                            <input name="rule" type="text" value="{rule}" />
+                        </div><div class="field small">
+                            <label>Iterations</label>
+                            <input name="iterations" type="number" value="{iterations}" />
+                        </div>
+                    </div>
+                    -->
+                </div>
+            </div>
+
+            <div class="spacer"></div>
+            <div class="help">
+                <p>Press ENTER to re-evaluate.</p>
+                <p>Sort the rule with drag &amp; drop.</p>
+                <p>Drop a rule on the right to delete it.</p>
+                <p>v0.1.0</p>
+            </div>
+        </div>
+        <button class="add-rule">Add a new rule</button>
+        <div class="sidebar-cover"></div>
+    </div>
+
+    <canvas width="100" height="100"></canvas>
+    <div class="toolbox">
+        <a href="https://github.com/kchapelier/cellular-automata-playground" target="_blank" title="Github">
+            <span class="fa fa-github-alt"></span>
+        </a>
+    </div>
+    <div class="bin">
+        <span>Drop a rule here to delete it</span>
+    </div>
+    <script src="build/index.js"></script>
+</body>
+</html>

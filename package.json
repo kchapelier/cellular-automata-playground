@@ -1,0 +1,18 @@
+{
+  "name": "cellular-automata-playground",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cellular Automata Playground",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify src/index.js -d --s main -u crypto > build/index.js",
+    "build-worker": "browserify src/worker.js -d --s main -u crypto > build/worker.js"
+  },
+  "author": "Kevin Chapelier",
+  "license": "MIT",
+  "dependencies": {
+    "cellular-automata": "^1.2.0",
+    "cellular-automata-rule-parser": "^2.1.0"
+  }
+}
