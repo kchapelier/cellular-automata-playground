@@ -184,6 +184,52 @@ function resizeCanvas () {
     canvas.style.height = (data.height * sceneOptions.zoom) + 'px';
 }
 
+window['useGpu'] = false;
+
+var color0 = 0xFF000000,
+    color1 = 0xFFFFFFFF;
+
+function createImageData (rawData, width, height) {
+    var imageData = new Uint32Array(rawData.length),
+        i,
+        i2,
+        x,
+        y;
+
+    for (i = 0; i < rawData.length; i++) {
+        //rotate 90°
+        x = (i % height) | 0;
+        y = (i / height) | 0;
+        i2 = (x * width + y);
+
+        imageData[i2] = rawData[i] ? color1 : color0;
+    }
+
+    return imageData.buffer;
+}
+
+function processInGpu (data) {
+    var time = Date.now();
+    var ca = new CellularAutomataGpu([data.width, data.height]);
+    ca.setOutOfBoundValue(data.outValue);
+
+    for (var i = 0; i < data.rules.length; i++) {
+        var rule = data.rules[i];
+
+        if (rule.valid && rule.iterations > 0) {
+            ca.apply(rule.rule, rule.iterations);
+        }
+    }
+
+    ca.finalize();
+    console.log('GPU: ' + (Date.now() - time) + 'ms');
+
+    queue.push({
+        result: createImageData(ca.array.data, data.width, data.height),
+        final: true
+    });
+}
+
 function reload () {
     if (busy) return;
 
@@ -192,8 +238,13 @@ function reload () {
     if (data.rules.length > 0) {
         busy = true;
         document.body.classList.add('busy');
-        console.log(data);
-        worker.postMessage(data);
+
+        if (window['useGpu']) {
+            processInGpu(data);
+        } else {
+            worker.postMessage(data);
+        }
+
         updateHash();
     }
 }

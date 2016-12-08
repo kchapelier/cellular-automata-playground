@@ -26,6 +26,7 @@ function createImageData (rawData, width, height) {
 }
 
 self.addEventListener('message', function onMessage (e) {
+    var time = Date.now();
     var ca = new CellularAutomata([e.data.width, e.data.height]),
         rules = e.data.rules,
         response = {
@@ -54,6 +55,7 @@ self.addEventListener('message', function onMessage (e) {
                 ca.apply(rules[i].rule, rules[i].iterations);
             }
         }
+        console.log('CPU:' + (Date.now() - time) + 'ms');
 
         response.result = createImageData(ca.array.data, e.data.width, e.data.height);
         response.final = true;
