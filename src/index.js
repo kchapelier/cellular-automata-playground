@@ -2,6 +2,8 @@
 
 // this may or may not need some serious refactoring, the interesting stuff is in the worker anyway
 
+var CellularAutomataGpu = require('cellular-automata-gpu');
+
 var RuleList = require('./rule-list');
 
 var clamp = function clamp (v, min, max) {
@@ -223,6 +225,7 @@ function processInGpu (data) {
 
     ca.finalize();
     console.log('GPU: ' + (Date.now() - time) + 'ms');
+    ca.destroy();
 
     queue.push({
         result: createImageData(ca.array.data, data.width, data.height),

@@ -6,13 +6,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify src/index.js -d --s main -u crypto > build/index.js",
-    "build-worker": "browserify src/worker.js -d --s main -u crypto > build/worker.js"
+    "build": "browserify src/index.js -d --s main -u crypto -u gl > build/index.js",
+    "build-worker": "browserify src/worker.js -d --s main -u crypto -u gl > build/worker.js"
   },
   "author": "Kevin Chapelier",
   "license": "MIT",
   "dependencies": {
     "cellular-automata": "^1.2.0",
-    "cellular-automata-rule-parser": "^2.1.0"
+    "cellular-automata-gpu": "0.0.1",
+    "cellular-automata-rule-parser": "^2.1.1"
   }
 }
