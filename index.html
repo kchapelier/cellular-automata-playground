@@ -10,6 +10,15 @@
     <div class="sidebar">
         <div class="sidebar-content">
             <div class="row">
+                <div class="field full">
+                    <label for="engine">Engine</label>
+                    <select id="engine" name="engine">
+                        <option value="cpu" selected>CPU (in a WebWorker)</option>
+                        <option value="gpu">GPU (no support for animation)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
                 <div class="field medium">
                     <label for="animationSpeed">Animation speed</label>
                     <select id="animationSpeed" name="animationSpeed">
@@ -71,7 +80,7 @@
                 <p>Press ENTER to re-evaluate.</p>
                 <p>Sort the rule with drag &amp; drop.</p>
                 <p>Drop a rule on the right to delete it.</p>
-                <p>v0.1.0</p>
+                <p>v0.2.0</p>
             </div>
         </div>
         <button class="add-rule">Add a new rule</button>

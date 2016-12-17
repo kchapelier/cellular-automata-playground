@@ -38,6 +38,7 @@ var widthElement = document.getElementById('width');
 var heightElement = document.getElementById('height');
 var outValueElement = document.getElementById('outValue');
 
+var engineElement = document.getElementById('engine');
 var animationSpeedElement = document.getElementById('animationSpeed');
 var zoomElement = document.getElementById('zoom');
 
@@ -108,12 +109,17 @@ function parseLink () {
 }
 
 var sceneOptions = {
+    gpu: false,
     zoom: 2,
     animationSpeed: 10
 };
 
 animationSpeedElement.addEventListener('change', function () {
     sceneOptions.animationSpeed = parseInt(animationSpeedElement.value, 10);
+});
+
+engineElement.addEventListener('change', function () {
+    sceneOptions.gpu = (engineElement.value === 'gpu');
 });
 
 zoomElement.addEventListener('change', function () {
@@ -186,8 +192,6 @@ function resizeCanvas () {
     canvas.style.height = (data.height * sceneOptions.zoom) + 'px';
 }
 
-window['useGpu'] = false;
-
 var color0 = 0xFF000000,
     color1 = 0xFFFFFFFF;
 
@@ -242,7 +246,7 @@ function reload () {
         busy = true;
         document.body.classList.add('busy');
 
-        if (window['useGpu']) {
+        if (sceneOptions.gpu) {
             processInGpu(data);
         } else {
             worker.postMessage(data);
