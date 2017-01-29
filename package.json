@@ -13,7 +13,8 @@
   "license": "MIT",
   "dependencies": {
     "cellular-automata": "^1.2.0",
-    "cellular-automata-gpu": "0.0.1",
-    "cellular-automata-rule-parser": "^2.1.1"
+    "cellular-automata-gpu": "0.0.2",
+    "cellular-automata-rule-parser": "^2.1.1",
+    "voxel": "git+https://github.com/kchapelier/voxel.git"
   }
 }

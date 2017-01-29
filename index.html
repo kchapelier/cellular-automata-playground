@@ -2,7 +2,7 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>Cellular Automata Playground v0.1.0</title>
+    <title>Cellular Automata Playground v0.3.0</title>
     <script src="https://use.fontawesome.com/b74a0a54af.js"></script>
     <link rel="stylesheet" href="style.css" />
 </head>
@@ -11,21 +11,30 @@
         <div class="sidebar-content">
             <div class="row">
                 <div class="field full">
-                    <label for="engine">Engine</label>
-                    <select id="engine" name="engine">
-                        <option value="cpu" selected>CPU (in a WebWorker)</option>
-                        <option value="gpu">GPU (no support for animation)</option>
+                    <label for="dimension">Dimension</label>
+                    <select id="dimension" name="dimension">
+                        <option value="2" selected>2D</option>
+                        <option value="3">3D</option>
                     </select>
                 </div>
             </div>
             <div class="row">
+                <div class="field full">
+                    <label for="engine">Engine</label>
+                    <select id="engine" name="engine">
+                        <option value="cpu" selected class="two-d-only">CPU (in a WebWorker)</option>
+                        <option value="gpu">GPU (no support for animation)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row two-d-only">
                 <div class="field medium">
                     <label for="animationSpeed">Animation speed</label>
                     <select id="animationSpeed" name="animationSpeed">
                         <option value="0">No animation</option>
                         <option value="10" selected>Fast</option>
-                        <option value="70">Medium</option>
-                        <option value="180">Slow</option>
+                        <option value="70" class="two-d-only">Medium</option>
+                        <option value="180" class="two-d-only">Slow</option>
                     </select>
                 </div><div class="field medium">
                     <label for="zoom">Zoom level</label>
@@ -37,13 +46,16 @@
                     </select>
                 </div>
             </div>
-            <div class="row">
+            <div class="row dimensions">
                 <div class="field medium">
                     <label for="width">Grid width</label>
                     <input id="width" name="width" type="number" value="100" />
                 </div><div class="field medium">
                     <label for="height">Grid height</label>
                     <input id="height" name="height" type="number" value="100" />
+                </div><div class="field medium">
+                    <label for="depth">Grid depth</label>
+                    <input id="depth" name="depth" type="number" value="100" />
                 </div>
             </div>
             <div class="row">
@@ -80,14 +92,15 @@
                 <p>Press ENTER to re-evaluate.</p>
                 <p>Sort the rule with drag &amp; drop.</p>
                 <p>Drop a rule on the right to delete it.</p>
-                <p>v0.2.0</p>
+                <p>v0.3.0</p>
             </div>
         </div>
         <button class="add-rule">Add a new rule</button>
         <div class="sidebar-cover"></div>
     </div>
 
-    <canvas width="100" height="100"></canvas>
+    <div class="canvas-container"></div>
+    <!-- <canvas width="100" height="100"></canvas> -->
     <div class="toolbox">
         <a href="https://github.com/kchapelier/cellular-automata-playground" target="_blank" title="Github">
             <span class="fa fa-github-alt"></span>
@@ -96,6 +109,7 @@
     <div class="bin">
         <span>Drop a rule here to delete it</span>
     </div>
+    <script src="vendors/three.r84.min.js"></script>
     <script src="build/index.js"></script>
 </body>
 </html>

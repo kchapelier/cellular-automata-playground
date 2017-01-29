@@ -5,6 +5,8 @@
 var CellularAutomataGpu = require('cellular-automata-gpu');
 
 var RuleList = require('./rule-list');
+var TwoDimensionsRenderer = require('./2d-renderer');
+var ThreeDimensionsRenderer = require('./3d-renderer');
 
 var clamp = function clamp (v, min, max) {
     return Math.min(Math.max(v, min), max);
@@ -36,20 +38,17 @@ function createWorker (script) {
 
 var widthElement = document.getElementById('width');
 var heightElement = document.getElementById('height');
+var depthElement = document.getElementById('depth');
 var outValueElement = document.getElementById('outValue');
 
 var engineElement = document.getElementById('engine');
 var animationSpeedElement = document.getElementById('animationSpeed');
 var zoomElement = document.getElementById('zoom');
-
-var reloadButtonElement = document.getElementById('reload');
+var dimensionElement = document.getElementById('dimension');
 
 var worker = createWorker ('build/worker.js');
 
-var canvas = document.querySelector('canvas');
-var context = canvas.getContext('2d');
-
-var imageData = context.createImageData(100, 100);
+var container = document.querySelector('.canvas-container');
 
 var busy = false;
 var queue = [];
@@ -67,7 +66,7 @@ function updateHash () {
         ruleString+= '&rule=' + encodeURI(data.rules[i].rule.replace(/ /g, '_')) + '*' + data.rules[i].iterations;
     }
 
-    document.location.hash = '#width=' + data.width + '&height=' + data.height + '&oov=' + data.outValue + ruleString;
+    document.location.hash = '#d=' + data.d + '&width=' + data.width + '&height=' + data.height + (data.d === 3 ? '&depth=' + data.depth : '') +  '&oov=' + data.outValue + ruleString;
 }
 
 function parseLink () {
@@ -75,6 +74,7 @@ function parseLink () {
         d:2,
         width: 100,
         height: 100,
+        depth: 100,
         outValue: 1,
         rules: []
     };
@@ -85,11 +85,17 @@ function parseLink () {
         option = option.split('=');
 
         switch (option[0]) {
+            case 'd':
+                data.d = clamp(parseInt(option[1], 10), 2, 3);
+                break;
             case 'width':
                 data.width = clamp(parseInt(option[1], 10), 1, 600);
                 break;
             case 'height':
                 data.height = clamp(parseInt(option[1], 10), 1, 600);
+                break;
+            case 'depth':
+                data.depth = clamp(parseInt(option[1], 10), 1, 600);
                 break;
             case 'oov':
                 data.outValue = option[1];
@@ -124,11 +130,29 @@ engineElement.addEventListener('change', function () {
 
 zoomElement.addEventListener('change', function () {
     sceneOptions.zoom = parseInt(zoomElement.value, 10);
-    changeZoomCanvas();
+    renderer.setZoom(sceneOptions.zoom);
 });
 
 var data = parseLink();
 
+var renderer2d = new TwoDimensionsRenderer(container, sceneOptions.zoom),
+    renderer3d = new ThreeDimensionsRenderer(container, sceneOptions.zoom),
+    renderer = renderer2d;
+
+function setDimension(dimension) {
+    if (dimension === 3) {
+        document.body.classList.add('three-d');
+        sceneOptions.gpu = true;
+        selectOption(engineElement, 'gpu');
+    } else {
+        document.body.classList.remove('three-d');
+    }
+}
+
+dimensionElement.addEventListener('change', function () {
+    data.d = clamp(parseInt(dimensionElement.value, 10), 2, 3);
+    setDimension(data.d);
+});
 
 for (var i = 0; i < data.rules.length; i++) {
     ruleList.addRule(data.rules[i].rule, data.rules[i].iterations);
@@ -136,7 +160,10 @@ for (var i = 0; i < data.rules.length; i++) {
 
 widthElement.value = data.width;
 heightElement.value = data.height;
+depthElement.value = data.depth;
 selectOption(outValueElement, data.outValue);
+selectOption(dimensionElement, data.d);
+setDimension(data.d);
 
 var lastTime = -999;
 function update (currentTime) {
@@ -149,16 +176,13 @@ function update (currentTime) {
 
         var iteration = queue[queueIndex];
 
-        resizeCanvas();
-
-        imageData = new ImageData(new Uint8ClampedArray(iteration.result), data.width, data.height);
-
         if (iteration.final) {
             busy = false;
             document.body.classList.remove('busy');
         }
 
-        context.putImageData(imageData, 0, 0);
+        renderer.displayImageData(iteration.result);
+
         queue[queueIndex] = null;
         queueIndex++;
         lastTime = currentTime;
@@ -168,28 +192,20 @@ function update (currentTime) {
         queueIndex = 0;
         queue.length = 0;
     }
+
+    renderer.animationFrame();
 }
 
 update(0);
 
 function updateData () {
+    data.d = parseInt(dimensionElement.value, 10);
     data.width = parseInt(widthElement.value, 10);
     data.height = parseInt(heightElement.value, 10);
+    data.depth = parseInt(depthElement.value, 10);
     data.outValue = outValueElement.value;
     data.rules = ruleList.rules.filter(function (rule) { return rule.valid && rule.iterations; });
     data.animated = sceneOptions.animationSpeed > 0;
-}
-
-function changeZoomCanvas () {
-    canvas.style.width = (canvas.width * sceneOptions.zoom) + 'px';
-    canvas.style.height = (canvas.height * sceneOptions.zoom) + 'px';
-}
-
-function resizeCanvas () {
-    canvas.width = data.width;
-    canvas.height = data.height;
-    canvas.style.width = (data.width * sceneOptions.zoom) + 'px';
-    canvas.style.height = (data.height * sceneOptions.zoom) + 'px';
 }
 
 var color0 = 0xFF000000,
@@ -216,7 +232,10 @@ function createImageData (rawData, width, height) {
 
 function processInGpu (data) {
     var time = Date.now();
-    var ca = new CellularAutomataGpu([data.width, data.height]);
+    var is3D = data.d === 3;
+    var caShape = is3D ? [data.width, data.height, data.depth] : [data.width, data.height];
+    var ca = new CellularAutomataGpu(caShape);
+
     ca.setOutOfBoundValue(data.outValue);
 
     for (var i = 0; i < data.rules.length; i++) {
@@ -231,16 +250,35 @@ function processInGpu (data) {
     console.log('GPU: ' + (Date.now() - time) + 'ms');
     ca.destroy();
 
-    queue.push({
-        result: createImageData(ca.array.data, data.width, data.height),
-        final: true
-    });
+    if (is3D) {
+        renderer3d.displayRawData(ca.array);
+
+        busy = false;
+        document.body.classList.remove('busy');
+    } else {
+        queue.push({
+            result: createImageData(ca.array.data, data.width, data.height),
+            final: true
+        });
+    }
 }
 
 function reload () {
     if (busy) return;
 
     updateData();
+
+    if (data.d === 3) {
+        renderer = renderer3d;
+        renderer3d.show();
+        renderer2d.hide();
+    } else {
+        renderer = renderer2d;
+        renderer3d.hide();
+        renderer2d.show();
+    }
+
+    renderer.resizeShape([data.width, data.height]);
 
     if (data.rules.length > 0) {
         busy = true;
@@ -260,6 +298,11 @@ document.body.addEventListener('keyup', function (e) {
     if (e.keyCode === 13) {
         reload();
     }
+});
+
+window.addEventListener('resize', function () {
+    renderer2d.resizeWindow();
+    renderer3d.resizeWindow();
 });
 
 reload();

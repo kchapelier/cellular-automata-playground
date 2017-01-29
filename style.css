@@ -125,6 +125,22 @@ body {
     width:50%;
 }
 
+.three-d .sidebar .dimensions .field.medium {
+    width:33%;
+}
+
+.sidebar .dimensions .field.medium:nth-child(3) {
+    display:none;
+}
+
+.three-d .sidebar .dimensions .field.medium:nth-child(3) {
+    display:inline-block;
+}
+
+.three-d .two-d-only {
+    display:none;
+}
+
 .sidebar .field.large {
     width:75%;
 }
@@ -208,15 +224,30 @@ body.is-dragging .bin {
     pointer-events:inherit;
 }
 
-canvas {
+.canvas-container {
     display:block;
     position:absolute;
     top:0;
     left:302px;
+    right:0;
+    bottom:0;
+}
+
+.canvas-container canvas.two-d {
+    display:none;
     margin:10px;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
     image-rendering: -moz-crisp-edges;
+}
+
+.canvas-container canvas.three-d {
+    display:none;
+    margin:0;
+}
+
+.canvas-container canvas.show {
+    display:block;
 }
 
 .toolbox {

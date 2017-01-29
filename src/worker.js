@@ -27,7 +27,9 @@ function createImageData (rawData, width, height) {
 
 self.addEventListener('message', function onMessage (e) {
     var time = Date.now();
-    var ca = new CellularAutomata([e.data.width, e.data.height]),
+    var is3D = e.data.d === 3;
+    var caShape = is3D ? [e.data.width, e.data.height, e.data.depth] : [e.data.width, e.data.height];
+    var ca = new CellularAutomata(caShape),
         rules = e.data.rules,
         response = {
             result: null,
